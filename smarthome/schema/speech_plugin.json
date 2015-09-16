@@ -1,0 +1,15 @@
+﻿{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "NW: Network Plugin",
+    "type": "object",
+    "properties": {
+        "sp": {
+            "description": "SPEECH: Das Item kann über sprache geändert (rw) oder abgefragt (ro) werden. Bei yes gilt der default_access",
+            "enum": [
+                "rw",
+                "ro",
+                "yes"
+            ]
+        }
+    }
+}

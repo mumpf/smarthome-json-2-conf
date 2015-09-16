@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "json2conf", "json2conf\json2conf.csproj", "{3FD8A208-3141-406E-82D5-ED02607EBB03}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "smarthome", "smarthome\smarthome.pyproj", "{D1B9A307-AB4D-44CE-B87C-4CFAD302F0B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "conf2json", "conf2json\conf2json.csproj", "{019DC071-CF3A-4309-A299-97DE8FF8B7F0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3FD8A208-3141-406E-82D5-ED02607EBB03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FD8A208-3141-406E-82D5-ED02607EBB03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FD8A208-3141-406E-82D5-ED02607EBB03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FD8A208-3141-406E-82D5-ED02607EBB03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1B9A307-AB4D-44CE-B87C-4CFAD302F0B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1B9A307-AB4D-44CE-B87C-4CFAD302F0B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{019DC071-CF3A-4309-A299-97DE8FF8B7F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{019DC071-CF3A-4309-A299-97DE8FF8B7F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{019DC071-CF3A-4309-A299-97DE8FF8B7F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{019DC071-CF3A-4309-A299-97DE8FF8B7F0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

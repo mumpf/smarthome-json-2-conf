@@ -1,0 +1,38 @@
+﻿{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "FB: FritzBox-Plugin",
+    "type": "object",
+    "properties": {
+        "fritzbox": {
+            "enum": [
+                "external_ip",
+                "connected",
+                "packets_sent",
+                "packets_received",
+                "bytes_sent",
+                "bytes_received",
+                "tam",
+                "wlan",
+                "host",
+                "link",
+                "reconnect",
+                "reboot",
+                "uptime",
+                "fbuptime",
+                "hostnumber",
+                "upstream",
+                "downstream",
+                "connection_error",
+                "call"
+            ]
+        },
+        "fb_tam": {
+            "description": "Nummer des Anrufbeantworters (nur in Verbindung mit 'tam')",
+            "enum": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
+        },
+        "fb_mac": {
+            "description": "MAC-Adresse (nur in Verbindung mit 'host')",
+            "pattern": "^([0-9a-fA-F]{2}([:]|$)){6}$"
+        }
+    }
+}

@@ -1,0 +1,387 @@
+﻿{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "type": "object",
+    "definitions": {
+        "item": {
+            "allOf": [
+                {
+                    "patternProperties": {
+                        "^[A-Z].*$": {
+                            "type": "object",
+                            "$ref": "#/definitions/item"
+                        }
+                    }
+                },
+                { "$ref": "#/definitions/template" },
+                { "$ref": "#/definitions/smarthome_basic" },
+                { "$ref": "smartvisu_plugin.json#" },
+                { "$ref": "sqlite_plugin.json#" },
+                { "$ref": "knx_plugin.json#" },
+                { "$ref": "network_plugin.json#" },
+                { "$ref": "speech_plugin.json#" },
+                { "$ref": "smarttv_plugin.json#" },
+                { "$ref": "fritzbox_plugin.json#" },
+                { "$ref": "wol_plugin.json#" },
+                { "$ref": "uzsu_plugin.json#" },
+                { "$ref": "tla_plugin.json#" },
+                { "$ref": "xbmc_plugin.json#" },
+                { "$ref": "autoblind_plugin.json#" }
+            ],
+            //Problem mit JSON-Schema-Verifikation: dependencies müssen an einer Stelle stehen, sonst kann man
+            //mit den Fehlermeldungen nichts anfangen!!! Hier sind somit Teile zusammengeführt, die eingentlich
+            //ins knx_plugin gehören
+            "anyOf": [
+                {
+                    "dependencies": {
+                        "knx_listen": [ "$templated" ],
+                        "knx_send": [ "$templated" ],
+                        "knx_init": [ "$templated" ],
+                        "knx_cache": [ "$templated" ],
+                        "crontab": [ "$templated" ],
+                        "autotimer": [ "$templated" ],
+                        "cache": [ "$templated" ],
+                        "value": [ "$templated" ],
+                        "enforce_updates": [ "$templated" ]
+                    }
+                },
+                {
+                    "dependencies": {
+                        "knx_listen": [ "knx_dpt" ],
+                        "knx_send": [ "knx_dpt" ],
+                        "knx_init": [ "knx_dpt" ],
+                        "knx_cache": [ "knx_dpt" ],
+                        "crontab": [ "type" ],
+                        "autotimer": [ "type" ],
+                        "cache": [ "type" ],
+                        "value": [ "type" ],
+                        "enforce_updates": [ "type" ]
+                    }
+
+                }
+            ]
+
+        },
+        "template": {
+            "type": "object",
+            "properties": {
+                "$template": {
+                    "type": "object",
+                    "description": "template processing",
+                    "additionalProperties": false,
+                    "required": [ "source" ],
+                    "properties": {
+                        "source": {
+                            "type": "string",
+                            "description": "json file containing template"
+                        },
+                        "knx": {
+                            "description": "KNX Gruppenadresse, die im Template ersetzt wird",
+                            "type": "string",
+                            "pattern": "^([0-9]|1[0-5])/[0-7]/([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$"
+                        }
+                    }
+                },
+                "$delete": {
+                    "type": "array",
+                    "description": "Löscht die Properties aus dem Template",
+                    "additionalItems": false,
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string",
+                        "description": "Der zu löschende Property-Name"
+                    }
+                },
+                "$override": {
+                    "type": "array",
+                    "description": "Die properties aus dem Template werden überschrieben, nicht gemerged",
+                    "additionalItems": false,
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string",
+                        "description": "Der zu überschreibende Property-Name"
+                    }
+                }
+            }
+        },
+        "smarthome_basic": {
+            "type": "object",
+            "description": "Native properties vom smarthome",
+            "definitions": {
+                "itemref": {
+                    "type": "string",
+                    "description": "Referenz auf ein existierendes Item"
+                },
+                "itemrefs": {
+                    "anyOf": [
+                        { "$ref": "#/definitions/smarthome_basic/definitions/itemref" },
+                        {
+                            "type": "array",
+                            "items": { "$ref": "#/definitions/smarthome_basic/definitions/itemref" },
+                            "minItems": 1,
+                            "uniqueItems": true
+                        }
+                    ]
+                },
+                "triggerValue": {
+                    "description": "Wert, der gesetzt werden soll",
+                    "type": [ "boolean", "integer", "string" ]
+                },
+                "minute": {
+                    "description": "Minute",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 59
+                },
+                "minutes": {
+                    "anyOf": [
+                        { "$ref": "#/definitions/smarthome_basic/definitions/minute" },
+                        {
+                            "type": "array",
+                            "items": { "$ref": "#/definitions/smarthome_basic/definitions/minute" },
+                            "minItems": 1,
+                            "uniqueItems": true
+                        }
+                    ]
+                },
+                "hour": {
+                    "description": "Stunde",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 23
+                },
+                "hours": {
+                    "anyOf": [
+                        { "$ref": "#/definitions/smarthome_basic/definitions/hour" },
+                        {
+                            "type": "array",
+                            "items": { "$ref": "#/definitions/smarthome_basic/definitions/hour" },
+                            "minItems": 1,
+                            "uniqueItems": true
+                        }
+                    ]
+                },
+                "day": {
+                    "description": "Tag",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 28
+                },
+                "days": {
+                    "anyOf": [
+                        { "$ref": "#/definitions/smarthome_basic/definitions/day" },
+                        {
+                            "type": "array",
+                            "items": { "$ref": "#/definitions/smarthome_basic/definitions/day" },
+                            "minItems": 1,
+                            "uniqueItems": true
+                        }
+                    ]
+                },
+                "weekday": {
+                    "description": "Wochentag für die crontab-Ausführung",
+                    "enum": [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" ]
+                },
+                "weekdays": {
+                    "anyOf": [
+                        { "$ref": "#/definitions/smarthome_basic/definitions/weekday" },
+                        {
+                            "type": "array",
+                            "items": { "$ref": "#/definitions/smarthome_basic/definitions/weekday" },
+                            "minItems": 1,
+                            "uniqueItems": true
+                        }
+                    ]
+                },
+                "crontabString": {
+                    "type": "string",
+                    "description": "Einzelner crontab-Eintrag min std day weekday [= value]"
+                },
+                "crontabObject": {
+                    "type": "object",
+                    "description": "Einzelner crontab-Eintrag als JSON-Object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "minute": { "$ref": "#/definitions/smarthome_basic/definitions/minutes" },
+                        "hour": { "$ref": "#/definitions/smarthome_basic/definitions/hours" },
+                        "day": { "$ref": "#/definitions/smarthome_basic/definitions/days" },
+                        "weekday": { "$ref": "#/definitions/smarthome_basic/definitions/weekdays" },
+                        "value": { "$ref": "#/definitions/smarthome_basic/definitions/triggerValue" }
+                    }
+                },
+                "crontabEntry": {
+                    "anyOf": [
+                        { "$ref": "#/definitions/smarthome_basic/definitions/crontabString" },
+                        { "$ref": "#/definitions/smarthome_basic/definitions/crontabObject" }
+                    ]
+                },
+                "crontabEntries": {
+                    "anyOf": [
+                        { "$ref": "#/definitions/smarthome_basic/definitions/crontabEntry" },
+                        {
+                            "type": "array",
+                            "items": { "$ref": "#/definitions/smarthome_basic/definitions/crontabEntry" },
+                            "minItems": 1,
+                            "uniqueItems": true
+                        }
+                    ]
+                },
+                "autotimerString": {
+                    "type": "string",
+                    "description": "Item wird nach vorgegebener Zeit auf den vorgegebenen Wert gesetzt",
+                    "pattern": "^\\d+m?(.?=.*)?$"
+                },
+                "autotimerObject": {
+                    "type": "object",
+                    "description": "Item wird nach vorgegebener Zeit auf den vorgegebenen Wert gesetzt",
+                    "additionalProperties": false,
+                    "anyOf": [
+                        { "required": [ "seconds", "value" ] },
+                        { "required": [ "minutes", "value" ] }
+                    ],
+                    "properties": {
+                        "seconds": {
+                            "type": "integer",
+                            "description": "Zeit in Sekunden",
+                            "minimum": 1
+                        },
+                        "minutes": {
+                            "type": "integer",
+                            "description": "Zeit in Minuten",
+                            "minimum": 1
+                        },
+                        "value": {
+                            "$ref": "#/definitions/smarthome_basic/definitions/triggerValue"
+                        }
+                    }
+                },
+                "autotimerEntry": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/smarthome_basic/definitions/autotimerString"
+                        },
+                        {
+                            "$ref": "#/definitions/smarthome_basic/definitions/autotimerObject"
+                        }
+                    ]
+                }
+            },
+            "properties": {
+                "$order": {
+                    "type": "integer",
+                    "description": "Reihenfolge der Properties"
+                },
+                //"$templated": {
+                //    "description": "Wenn dieses Property angegeben wird, werden keine Abhängigkeitsprüfungen vorgenommen, da davon ausgegangen wird, dass die Abhängigkeiten durch ein Template behoben werden",
+                //    "enum": [ true ]
+                //},
+                "name": {
+                    "type": "string",
+                    "description": "Vom Benutzer vergebbarer Name des Items, wird in Logs und der Visu benutzt"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Beschreibung (Kommentar) des Items"
+                },
+                "type": {
+                    "description": "Typ des Items",
+                    "enum": [
+                        "num",
+                        "str",
+                        "bool",
+                        "list",
+                        "dict",
+                        "scene",
+                        "foo"
+                    ]
+                },
+                "enforce_updates": {
+                    "description": "Wenn gesetzt, werden Trigger immer prozessiert und nicht nur bei Wertänderungen",
+                    "enum": [ true ]
+                },
+                "value": {
+                    "description": "Initialwert für dieses Item"
+                },
+                "cache": {
+                    "type": "boolean",
+                    "description": "Wenn gesetzt, wird der Wert des Items gespeichert und beim Neustart wird das Item mit diesem Wert wieder initialisiert",
+                    "default": false
+                },
+                "eval": {
+                    "description": "Berechnungsvorschrift für den Wert (als python Anweisung). In der Variable 'value' steht der Wert, den das Item ohne eval annehmen würde",
+                    "anyOf": [
+                        { "type": "string" },
+                        {
+                            "enum": [
+                                "<any>",
+                                "value",
+                                "or",
+                                "and",
+                                "avg",
+                                "sum",
+                                "min",
+                                "max"
+                            ]
+                        }
+                    ]
+                },
+                "eval_trigger": {
+                    "$ref": "#/definitions/smarthome_basic/definitions/itemrefs"
+                },
+                "autotimer": {
+                    "$ref": "#/definitions/smarthome_basic/definitions/autotimerEntry"
+                },
+                "crontab": {
+                    "$ref": "#/definitions/smarthome_basic/definitions/crontabEntries"
+                },
+                "cycle": {
+                    "type": "string",
+                    "description": "Ein sich wiederholender trigger (in Sekunden)",
+                    "pattern": "\\d* = .*"
+                },
+                "threshold": {
+                    "type": [ "boolean", "number", "string" ],
+                    "description": "Nachfolgende Logik wird nur getriggert, wenn das Intervall vom Threshold verlassen wird"
+                }
+            }
+            //"anyOf": [
+            //    {
+            //        "dependencies": {
+            //            "crontab": [ "type" ],
+            //            "autotimer": [ "type" ],
+            //            "cache": [ "type" ],
+            //            "value": [ "type" ],
+            //            "enforce_updates": [ "type" ]
+            //        }
+            //    },
+            //    {
+            //        "dependencies": {
+            //            "crontab": [ "$templated" ],
+            //            "autotimer": [ "$templated" ],
+            //            "cache": [ "$templated" ],
+            //            "value": [ "$templated" ],
+            //            "enforce_updates": [ "$templated" ]
+            //        }
+            //    }
+            //]
+        }
+    },
+    "additionalProperties": false,
+    "required": [ "$schema" ],
+    "properties": {
+        "$schema": {
+            "description": "Verweis auf das Schema, dem dieses Dokument genügt",
+            "enum": [
+                "../schema/ItemSchema.json"
+            ]
+        },
+        "autoBlind": {
+            "$ref": "autoblind_plugin.json#/properties/autoBlind"
+        }
+    },
+    "patternProperties": {
+        "^[A-Z].*": {
+            "type": "object",
+            "$ref": "#/definitions/item"
+        }
+    }
+}

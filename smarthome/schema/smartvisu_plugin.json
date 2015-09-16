@@ -1,0 +1,62 @@
+﻿{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "type": "object",
+    "title": "Properties vom smartvisu-Plugin",
+    "definitions": {
+        "singleWidget": {
+            "type": "string",
+            "description": "Ein widget"
+        },
+        "multilineWidget": {
+            "anyOf": [
+                { "$ref": "#/definitions/singleWidget" },
+                {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/singleWidget" },
+                    "minItems": 1,
+                    "uniqueItems": false
+                }
+            ]
+        },
+        "Widgets": {
+            "anyOf": [
+                { "$ref": "#/definitions/multilineWidget" },
+                {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/multilineWidget" },
+                    "minItems": 1,
+                    "uniqueItems": true
+                }
+            ]
+        }
+    },
+    "properties": {
+        "sv_page": {
+            "description": "VISU: Seitentyp",
+            "enum": [
+                "room",
+                "seperator"
+            ]
+        },
+        "sv_img": {
+            "type": "string",
+            "description": "VISU: Bild, das angezeigt werden soll",
+            "pattern": "^.*[.](png|svg)$"
+        },
+        "sv_nav_aside": {
+            "description": "VISU: Widgets in der Sidebar",
+            "$ref": "#/definitions/Widgets"
+        },
+        "sv_widget": { "$ref": "#/definitions/Widgets" },
+        "sv_import": {
+            "type": "string",
+            "description": "VISU: Import an additional module"
+        },
+        "visu_acl": {
+            "enum": [
+                "rw",
+                "ro"
+            ]
+        }
+    }
+}

@@ -1,0 +1,18 @@
+﻿{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "JSON Schema für ... Plugin",
+    "type": "object",
+    "properties": {
+        "pa_string": {
+            "type": "string",
+            "description": "Dies ist ein test-property für plugins"
+        },
+        "pa_enum": {
+            "description": "Beispiel für eine Aufzählung für plugins",
+            "enum": [
+                "aus",
+                "an"
+            ]
+        }
+    }
+}

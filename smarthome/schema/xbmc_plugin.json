@@ -1,0 +1,32 @@
+﻿{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "type": "object",
+    "title": "KODI: Mediacenter",
+    "properties": {
+        "xbmc_host": {
+            "type": "string",
+            "description": "KODI: Host des Media-PC"
+        },
+        "xbmc_port": {
+            "type": "integer",
+            "description": "KODI: Port für Kodi-Fernsteuerung (default: 9090)"
+        },
+        "xbmc_listen": {
+            "description": "KODI: Ereignisse, auf die gelauscht werden soll",
+            "enum": [
+                "state",
+                "title",
+                "media",
+                "volume",
+                "mute"
+            ]
+        },
+        "xbmc_send": {
+            "description": "KODI: Aktionen, die von Kodi ausgeführt werden sollen",
+            "enum": [
+                "volume",
+                "mute"
+            ]
+        }
+    }
+}

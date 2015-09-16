@@ -1,0 +1,18 @@
+﻿{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "JSON Schema für eigene Item-Attribute",
+    "type": "object",
+    "properties": {
+        //"test": {
+        //    "type": "string",
+        //    "description": "Dies ist ein test-property zur Demonstration von Erweiterungen"
+        //},
+        //"testEnum": {
+        //    "description": "Beispiel für eine Aufzählung",
+        //    "enum": [
+        //        "aus",
+        //        "an"
+        //    ]
+        //}
+    }
+}

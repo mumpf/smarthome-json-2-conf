@@ -1,0 +1,14 @@
+﻿{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "type": "object",
+    "title": "SQLITE: Datenbank-Plugin",
+    "properties": {
+        "sqlite": {
+            "description": "SQLITE: Aktiviert die Datenaufzeichnung (bei init wird auch mit dem letzten Wert initialisiert)",
+            "enum": [
+                "yes",
+                "init"
+            ]
+        }
+    }
+}

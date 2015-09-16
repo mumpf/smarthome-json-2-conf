@@ -1,0 +1,72 @@
+﻿{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "TLA: Treppenlichtautomat-Plugin",
+    "type": "object",
+    "properties": {
+        "tla": {
+            "description": "TLA: Treppenlichtzeit in Sekunden, aktiviert den TLA",
+            "anyOf": [
+                {
+                    "type": "integer"
+                },
+                {
+                    "enum": [
+                        "<seconds>",
+                        "trigger",
+                        "visu",
+                        "dauer",
+                        "sperre",
+                        "helligkeit"
+                    ]
+                }
+            ]
+        },
+        "tla_einschaltverzoergerung": {
+            "description": "TLA: Einschaltverzögerung in Sekunden",
+            "type": "integer",
+            "default": 0
+        },
+        "tla_sperren": {
+            "description": "TLA: Verhalten beim sperren: 0=unverändert, -1=aus, 1=an",
+            "enum": [
+                -1,
+                0,
+                1
+            ],
+            "default": 0
+        },
+        "tla_entsperren": {
+            "description": "TLA: Verhalten beim entsperren: 0=unverändert, -1=aus, 1=an; an aktiviert auch Treppenlichtzeit",
+            "enum": [
+                -1,
+                0,
+                1
+            ],
+            "default": 0
+        },
+        "tla_verlaengern": {
+            "description": "TLA: Erlaubt Nachtriggern",
+            "type": "boolean"
+        },
+        "tla_anzahl_warnungen": {
+            "description": "TLA: Anzahl der Warnungen bei Vorwarnen (aktiviert gleichzeitig vorwarnen)",
+            "type": "integer",
+            "default": 0
+        },
+        "tla_warndauer": {
+            "description": "TLA: Warndauer (in s), in der das Licht aus ist",
+            "type": "integer",
+            "default": 1
+        },
+        "tla_vorwarnzeit": {
+            "description": "TLA: Vorwarnzeit (in s), in der das Licht wieder an ist, bevor es aus geht",
+            "type": "integer",
+            "default": 60
+        },
+        "tla_helligkeit_max": {
+            "description": "TLA: Helligkeitsschwellwert, unterhalb dessen der TLA aktiv wird (0=helligkeitsunabhängig)",
+            "type": "integer",
+            "default": 0
+        }
+    }
+}

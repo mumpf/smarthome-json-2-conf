@@ -1,0 +1,394 @@
+﻿{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "type": "object",
+    "title": "BLIND: Verschattungs-Plugin",
+    "definitions": {
+        "value": {
+            "type": [
+                "boolean",
+                "number",
+                "string"
+            ],
+            "description": "Wert einer generischen Bedingung"
+        },
+        "rule": {
+            "type": "object",
+            "description": "Regel der State-Engine, beliebiger Name, sollte für die Visu sprechend sein",
+            "additionalProperties": false,
+            "properties": {
+                "$order": {
+                    "type": "integer",
+                    "description": "Reihenfolge der Properties"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Beschreibung des Items"
+                },
+                "type": {
+                    "description": "Typ des Positionsitems, immer foo",
+                    "enum": [
+                        "foo"
+                    ]
+                },
+                "name": {
+                    "description": "Name des Items",
+                    "type": "string"
+                },
+                "as_use": {
+                    "description": "Referenzitem, dessen Werte als default genutzt werden",
+                    "type": "string"
+                },
+                "enter": {
+                    "description": "Eingangsbedingungen, um den Zustand zu betreten",
+                    "$ref": "#/definitions/condition"
+                },
+                "leave": {
+                    "description": "Ausgangsbedingungen, um den Zustand zu verlassen",
+                    "$ref": "#/definitions/condition"
+                },
+                "as_trigger_*": {
+                    "description": "Triggert eine Logik, wenn der Zustand erreicht ist im Format Logikname:Wert",
+                    "type": "string"
+                }
+            },
+            "patternProperties": {
+                "^enter_.*$": {
+                    "type": "object",
+                    "$ref": "#/definitions/condition",
+                    "description": "Eingangsbedingungen, um den Zustand zu betreten"
+                },
+                "^leave_.*$": {
+                    "description": "Ausgangsbedingungen, um den Zustand zu verlassen",
+                    "$ref": "#/definitions/condition"
+                },
+                "^as_set_[A-Z].*$": {
+                    "description": "Setzt ein Item, wenn dieser Zustand erreicht worden ist",
+                    "type": "string"
+                    //"pattern": "^(value|eval|item):.*"
+                },
+                "as_trigger_.*": {
+                    "description": "Triggert eine Logik, wenn der Zustand erreicht ist im Format Logikname:Wert",
+                    "type": "string"
+                }
+            }
+        },
+        "condition": {
+            "type": "object",
+            "description": "Bedingungen, um einen Zustand zu betreten (enter) oder zu verlassen (leave)",
+            "additionalProperties": false,
+            "properties": {
+                "description": {
+                    "$ref": "ItemSchema.json#/definitions/smarthome_basic/properties/description"
+                },
+                "as_min_delay": {
+                    "type": "integer",
+                    "description": "Untergrenze: Zeit (s), die vergangen sein muss, ohne dass irgendeine enter-Bedingung erfüllt ist"
+                },
+                "as_max_delay": {
+                    "type": "integer",
+                    "description": "Obergrenze: Zeit (s), die vergangen sein muss, ohne dass irgendeine enter-Bedingung erfüllt ist"
+                },
+                "as_value_delay": {
+                    "type": "integer",
+                    "description": "Zeit (s), die vergangen sein muss, ohne dass irgendeine enter-Bedingung erfüllt ist"
+                },
+                "as_negate_delay": {
+                    "type": "integer",
+                    "description": "Die Grenzen von min_delay und max_delay werden vertauscht ausgewertet"
+                },
+                "as_min_random": {
+                    "type": "integer",
+                    "description": "Untergrenze: Zuffallszahl (0-100)",
+                    "minimum": 0,
+                    "maximum": 100
+                },
+                "as_max_random": {
+                    "type": "integer",
+                    "description": "Obergrenze: Zuffallszahl (0-100)",
+                    "minimum": 0,
+                    "maximum": 100
+                },
+                "as_value_random": {
+                    "type": "integer",
+                    "description": "Zuffallszahl (0-100)",
+                    "minimum": 0,
+                    "maximum": 100
+                },
+                "as_negate_random": {
+                    "type": "integer",
+                    "description": "Die Grenzen von min_random und max_random werden vertauscht ausgewertet",
+                    "minimum": 0,
+                    "maximum": 100
+                },
+                "as_min_time": {
+                    "type": "string",
+                    "description": "Untergrenze für die Uhrzeit (Stunde, Minute)",
+                    "pattern": "(([0-1]\\d|2[0-3]):[0-5]\\d)|24:00"
+                },
+                "as_max_time": {
+                    "type": "string",
+                    "description": "Obergrenze für die Uhrzeit (Stunde, Minute)",
+                    "pattern": "(([0-1]\\d|2[0-3]):[0-5]\\d)|24:00"
+                },
+                "as_negate_time": {
+                    "type": "boolean",
+                    "description": "Die Grenzen von min_time und max_time werden vertauscht ausgewertet"
+                },
+                "as_min_weekday": {
+                    "type": "number",
+                    "description": "Start-Wochentag (0=Montag, 6=Sonntag)",
+                    "minimum": 0,
+                    "maximum": 6
+                },
+                "as_max_weekday": {
+                    "type": "number",
+                    "description": "Ende-Wochentag (0=Montag, 6=Sonntag)",
+                    "minimum": 0,
+                    "maximum": 6
+                },
+                "as_negate_weekday": {
+                    "type": "boolean",
+                    "description": "Die Grenzen von min_weekday und max_weekday werden vertauscht ausgewertet"
+                },
+                "as_min_sun_azimut": {
+                    "type": "number",
+                    "description": "Minimale Sonnenposition (Kompass-)Richtung: (0=N, 90=O, 180=S, 270=W)",
+                    "minimum": 0,
+                    "maximum": 360
+                },
+                "as_max_sun_azimut": {
+                    "type": "number",
+                    "description": "Maximale Sonnenposition (Kompass-)Richtung: (0=N, 90=O, 180=S, 270=W)",
+                    "minimum": 0,
+                    "maximum": 360
+                },
+                "as_negate_sun_azimut": {
+                    "type": "boolean",
+                    "description": "Die Grenzen von min_sun_azimut und max_sun_azimut werden vertauscht ausgewertet"
+                },
+                "as_min_sun_altitude": {
+                    "type": "number",
+                    "description": "Minimale Sonnenhöhe: (0=Horizont, 90=Zenit)",
+                    "minimum": 0,
+                    "maximum": 90
+                },
+                "as_max_sun_altitude": {
+                    "type": "number",
+                    "description": "Maximale Sonnenhöhe: (0=Horizont, 90=Zenit)",
+                    "minimum": 0,
+                    "maximum": 90
+                },
+                "as_negate_sun_altitude": {
+                    "type": "boolean",
+                    "description": "Die Grenzen von min_sun_altitude und max_sun_altitude werden vertauscht ausgewertet"
+                },
+                "as_min_age": {
+                    "type": "integer",
+                    "description": "Minimale Zeit seit der letzten Positionsänderung in Sekunden",
+                    "minimum": 0
+                },
+                "as_max_age": {
+                    "type": "integer",
+                    "description": "Maximale Zeit seit der letzten Positionsänderung in Sekunden",
+                    "minimum": 0
+                },
+                "as_negate_age": {
+                    "type": "boolean",
+                    "description": "Die Grenzen von min_age und max_age werden vertauscht ausgewertet"
+                }
+            },
+            "patternProperties": {
+                "^as_value_[A-Z].*$": {
+                    "$ref": "#/definitions/value"
+                },
+                "^as_min_[A-Z].*$": {
+                    "$ref": "#/definitions/value"
+                },
+                "^as_max_[A-Z].*$": {
+                    "$ref": "#/definitions/value"
+                },
+                "^as_negate_[A-Z].*$": {
+                    "description": "Negiert die entsprechende Bedingung",
+                    "enum": [ true ]
+                },
+                "^as_agemin_[A-Z].*$": {
+                    "description": "Minimalalter des Items in Sekunden",
+                    "type": "integer"
+                },
+                "^as_agemax_[A-Z].*$": {
+                    "description": "Maximalalter des Items in Sekunden",
+                    "type": "integer"
+                }
+            }
+        },
+        "stateStore": {
+            "description": "Letzter angesteuerter Zustand (Item)",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "cache"
+            ],
+            "properties": {
+                "type": {
+                    "enum": [ "str" ]
+                },
+                "visu_acl": {
+                    "enum": [ "ro" ]
+                },
+                "cache": {
+                    "enum": [ true ]
+                }
+            }
+        },
+        "current": {
+            "type": "object",
+            "description": "Aktueller Status der State-Engine",
+            "additionalProperties": false,
+            "required": [
+                "suspended",
+                "lock",
+                "stateId",
+                "stateName"
+            ],
+            "properties": {
+                "suspended": {
+                    "description": "Staus: Automatik ist durch manuellen Eingriff deaktiviert",
+                    "$ref": "ItemSchema.json#/definitions/item"
+                },
+                "lock": {
+                    "description": "Sperren der Automatik",
+                    "$ref": "ItemSchema.json#/definitions/item"
+                },
+                "stateId": {
+                    "description": "Letzter angesteuerter Zustand (Item)",
+                    "$ref": "#/definitions/stateStore"
+                },
+                "stateName": {
+                    "description": "Letzter angesteuerter Zustand (Name)",
+                    "$ref": "#/definitions/stateStore"
+                }
+            }
+        },
+        "rules": {
+            "type": "object",
+            "description": "Regeln der State-Engine",
+            "allOf": [
+                {
+                    "$ref": "ItemSchema.json#/definitions/smarthome_basic"
+                },
+                {
+                    "patternProperties": {
+                        "^[A-Z].*$": {
+                            "type": "object",
+                            "$ref": "#/definitions/rule"
+                        },
+                        "^as_item_[A-Z].*$": {
+                            "description": "Referenz auf ein existierendes Item für generische Bedingungen",
+                            "type": "string",
+                            "$ref": "ItemSchema.json#/definitions/smarthome_basic/definitions/itemref"
+                        },
+                        "^as_eval_[A-Z].*$": {
+                            "description": "Aufruf einer Funktion",
+                            "type": "string"
+                        },
+                        "^as_mindelta_[A-Z].*$": {
+                            "description": "Die minimale Wertänderung, bevor eine Änderung ausgeführt wird",
+                            "type": "number"
+                        }
+                    },
+                    "oneOf": [
+                        {
+                            "required": [
+                                "type",
+                                "as_plugin"
+                            ]
+                        },
+                        {
+                            "required": [
+                                "$templated"
+                            ]
+                        }
+                    ],
+                    "properties": {
+                        "$templated": {
+                            "enum": [ true ]
+                        },
+                        "type": {
+                            "enum": [ "bool" ]
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Aufgabe dieser State-Engine"
+                        },
+                        "as_plugin": {
+                            "description": "Deklariert diese Item als vom Autoblind-Plugin verwaltetes Item",
+                            "enum": [
+                                "active",
+                                "default"
+                            ]
+                        },
+                        "as_lock_item": {
+                            "enum": [
+                                "~~.State.lock"
+                            ]
+                        },
+                        "as_suspend_item": {
+                            "enum": [
+                                "~~.State.suspended"
+                            ]
+                        },
+                        "as_laststate_item_id": {
+                            "enum": [
+                                "~~.State.stateId"
+                            ]
+                        },
+                        "as_laststate_item_name": {
+                            "enum": [
+                                "~~.State.stateName"
+                            ]
+                        },
+                        "as_suspend_watch": {
+                            "description": "Referenz auf ein oder mehrere Items zur manuellen Bedienung",
+                            "$ref": "ItemSchema.json#/definitions/smarthome_basic/definitions/itemrefs"
+                        },
+                        "as_suspend_time": {
+                            "description": "Rückfallzeit nach manueller Bedienung in Sekunden",
+                            "type": "integer",
+                            "minimum": 1
+                        },
+                        "as_startup_delay": {
+                            "description": "Zeit bis zur ersten Auswertung in Sekunden",
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "properties": {
+        "autoBlind": {
+            "type": "object",
+            "description": "State-Engine settings",
+            "additionalProperties": false,
+            "properties": {
+                "$template": {
+                    "$ref": "ItemSchema.json#/definitions/template/properties/%24template"
+                },
+                "$delete": {
+                    "$ref": "ItemSchema.json#/definitions/template/properties/%24delete"
+                },
+                "State": {
+                    "$ref": "#/definitions/current"
+                },
+                "Rules": {
+                    "$ref": "#/definitions/rules"
+                }
+            },
+            "required": [
+                "Rules"
+            ]
+        }
+    }
+}

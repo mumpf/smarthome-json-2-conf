@@ -1,0 +1,15 @@
+16.09.15 first patch v0.21
+- json2conf: corrected runtime error if multiple GA in string found
+- knx_plugin: supports now also multiple GA in string notation, currently used in knx_send and knx_listen
+
+15.09.15 first public release v0.2
+- json2conf: with $override(array) template properties can be overwritten and not merged to target
+- json2conf: (bugfix) comments in arrays are could produce empty strings resulting in parsing errors of sh.py - solved
+- json2conf: autoBlind references are checked: for any as_(value|min|max|agemin|agemax|set)_* always an as_item_* has to exist 
+- ItemSchema: added max/min to eval, based on newest sh.py git dev branch from August, 1st.
+- json2conf: (bugfix) $template was not processed if contained in "autoBlind" object 
+- autoblind_plugin: "$template" allowed within "autoBlind" property
+- ItemSchema: "autoBlind" now also allowed on root level (i.e. for templates)
+- autoblind_plugin: "description" now also possible for states 
+
+27.07.15 relesed v0.1 (internal testers)

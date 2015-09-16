@@ -1,0 +1,11 @@
+﻿{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "UZSU: Universelle Zeitschaltuhr",
+    "type": "object",
+    "properties": {
+        "uzsu_item": {
+            "type": "string",
+            "description": "Referenz auf das zu schaltende Item"
+        }
+    }
+}

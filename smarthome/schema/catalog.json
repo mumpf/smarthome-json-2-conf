@@ -1,0 +1,12 @@
+﻿{
+    "$schema": "http://json.schemastore.org/schema-catalog",
+
+    "version": 1.0,
+    "schemas": [
+        {
+            "name": "ItemSchema.json",
+            "description": "smarthome.py item file format",
+            "url": "../schema/ItemSchema.json"
+        }
+    ]
+}

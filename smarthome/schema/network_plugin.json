@@ -1,0 +1,18 @@
+﻿{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "NW: Network Plugin",
+    "type": "object",
+    "properties": {
+        "nw": {
+            "description": "NW: Das Item kann über den generischen Listener im Format 'item'|item-pfad|wert angesprochen werden",
+            "enum": [
+                "yes"
+            ]
+        },
+        "nw_udp_listen": {
+            "type": "string",
+            "description": "NW: IP und Port, auf dem UDP-Pakete empfangen werden sollen",
+            "pattern": "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\:[0-9]{1,5}"
+        }
+    }
+}

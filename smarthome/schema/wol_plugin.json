@@ -1,0 +1,11 @@
+﻿{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "WOL: WakeOnLan-Plugin",
+    "type": "object",
+    "properties": {
+        "wol_mac": {
+            "description": "MAC-Adresse des zu weckenden Rechners",
+            "pattern": "^([0-9a-fA-F]{2}([:]|$)){6}$"
+        }
+    }
+}

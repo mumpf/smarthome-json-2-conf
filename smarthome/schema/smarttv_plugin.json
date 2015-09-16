@@ -1,0 +1,18 @@
+﻿{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "TV: Smart-TV plugin",
+    "type": "object",
+    "properties": {
+        "smarttv": {
+            "description": "TV: Kommando für den Smart-TV",
+            "enum": [
+                "true",
+                "KEY_MUTE"
+            ]
+        },
+        "smarttv_id": {
+            "type": "integer",
+            "description": "TV: Eindeutige ID für den TV"
+        }
+    }
+}
