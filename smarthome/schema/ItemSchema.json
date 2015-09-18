@@ -4,6 +4,7 @@
     "definitions": {
         "item": {
             "allOf": [
+                { "$ref": "ItemSchemaOwn.json#" },
                 {
                     "patternProperties": {
                         "^[A-Z].*$": {
