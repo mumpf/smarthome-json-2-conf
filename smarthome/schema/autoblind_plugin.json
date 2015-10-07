@@ -64,7 +64,7 @@
                 "^as_set_[A-Z].*$": {
                     "description": "Setzt ein Item, wenn dieser Zustand erreicht worden ist",
                     "type": "string"
-                    //"pattern": "^(value|eval|item):.*"
+                    //"pattern": "^(value|eval|item|byattr):.*"
                 },
                 "as_trigger_.*": {
                     "description": "Triggert eine Logik, wenn der Zustand erreicht ist im Format Logikname:Wert",
@@ -81,120 +81,126 @@
                     "$ref": "ItemSchema.json#/definitions/smarthome_basic/properties/description"
                 },
                 "as_min_delay": {
-                    "type": "integer",
+                    "type": [ "integer", "string" ],
                     "description": "Untergrenze: Zeit (s), die vergangen sein muss, ohne dass irgendeine enter-Bedingung erfüllt ist"
                 },
                 "as_max_delay": {
-                    "type": "integer",
+                    "type": [ "integer", "string" ],
                     "description": "Obergrenze: Zeit (s), die vergangen sein muss, ohne dass irgendeine enter-Bedingung erfüllt ist"
                 },
                 "as_value_delay": {
-                    "type": "integer",
+                    "type": [ "integer", "string" ],
                     "description": "Zeit (s), die vergangen sein muss, ohne dass irgendeine enter-Bedingung erfüllt ist"
                 },
                 "as_negate_delay": {
-                    "type": "integer",
+                    "enum": [ true ],
                     "description": "Die Grenzen von min_delay und max_delay werden vertauscht ausgewertet"
                 },
                 "as_min_random": {
-                    "type": "integer",
+                    "type": [ "integer", "string" ],
                     "description": "Untergrenze: Zuffallszahl (0-100)",
                     "minimum": 0,
                     "maximum": 100
                 },
                 "as_max_random": {
-                    "type": "integer",
+                    "type": [ "integer", "string" ],
                     "description": "Obergrenze: Zuffallszahl (0-100)",
                     "minimum": 0,
                     "maximum": 100
                 },
                 "as_value_random": {
-                    "type": "integer",
+                    "type": [ "integer", "string" ],
                     "description": "Zuffallszahl (0-100)",
                     "minimum": 0,
                     "maximum": 100
                 },
                 "as_negate_random": {
-                    "type": "integer",
-                    "description": "Die Grenzen von min_random und max_random werden vertauscht ausgewertet",
-                    "minimum": 0,
-                    "maximum": 100
+                    "enum": [ true ],
+                    "description": "Die Grenzen von min_random und max_random werden vertauscht ausgewertet"
                 },
                 "as_min_time": {
                     "type": "string",
                     "description": "Untergrenze für die Uhrzeit (Stunde, Minute)",
-                    "pattern": "(([0-1]\\d|2[0-3]):[0-5]\\d)|24:00"
+                    "pattern": "(value:)?(([0-1]\\d|2[0-3]):[0-5]\\d)|24:00|(eval|item):.*"
                 },
                 "as_max_time": {
                     "type": "string",
                     "description": "Obergrenze für die Uhrzeit (Stunde, Minute)",
-                    "pattern": "(([0-1]\\d|2[0-3]):[0-5]\\d)|24:00"
+                    "pattern": "(value:)?(([0-1]\\d|2[0-3]):[0-5]\\d)|24:00|(eval|item):.*"
                 },
                 "as_negate_time": {
-                    "type": "boolean",
+                    "enum": [ true ],
                     "description": "Die Grenzen von min_time und max_time werden vertauscht ausgewertet"
                 },
                 "as_min_weekday": {
-                    "type": "number",
+                    "type": [ "integer", "string" ],
                     "description": "Start-Wochentag (0=Montag, 6=Sonntag)",
                     "minimum": 0,
                     "maximum": 6
                 },
                 "as_max_weekday": {
-                    "type": "number",
+                    "type": [ "integer", "string" ],
                     "description": "Ende-Wochentag (0=Montag, 6=Sonntag)",
                     "minimum": 0,
                     "maximum": 6
                 },
                 "as_negate_weekday": {
-                    "type": "boolean",
+                    "enum": [ true ],
                     "description": "Die Grenzen von min_weekday und max_weekday werden vertauscht ausgewertet"
                 },
                 "as_min_sun_azimut": {
-                    "type": "number",
+                    "type": [ "integer", "string" ],
                     "description": "Minimale Sonnenposition (Kompass-)Richtung: (0=N, 90=O, 180=S, 270=W)",
                     "minimum": 0,
                     "maximum": 360
                 },
                 "as_max_sun_azimut": {
-                    "type": "number",
+                    "type": [ "integer", "string" ],
                     "description": "Maximale Sonnenposition (Kompass-)Richtung: (0=N, 90=O, 180=S, 270=W)",
                     "minimum": 0,
                     "maximum": 360
                 },
                 "as_negate_sun_azimut": {
-                    "type": "boolean",
+                    "enum": [ true ],
                     "description": "Die Grenzen von min_sun_azimut und max_sun_azimut werden vertauscht ausgewertet"
                 },
                 "as_min_sun_altitude": {
-                    "type": "number",
+                    "type": [ "integer", "string" ],
                     "description": "Minimale Sonnenhöhe: (0=Horizont, 90=Zenit)",
                     "minimum": 0,
                     "maximum": 90
                 },
                 "as_max_sun_altitude": {
-                    "type": "number",
+                    "type": [ "integer", "string" ],
                     "description": "Maximale Sonnenhöhe: (0=Horizont, 90=Zenit)",
                     "minimum": 0,
                     "maximum": 90
                 },
                 "as_negate_sun_altitude": {
-                    "type": "boolean",
+                    "enum": [ true ],
                     "description": "Die Grenzen von min_sun_altitude und max_sun_altitude werden vertauscht ausgewertet"
                 },
                 "as_min_age": {
-                    "type": "integer",
+                    "type": [ "integer", "string" ],
                     "description": "Minimale Zeit seit der letzten Positionsänderung in Sekunden",
                     "minimum": 0
                 },
                 "as_max_age": {
-                    "type": "integer",
+                    "type": [ "integer", "string" ],
                     "description": "Maximale Zeit seit der letzten Positionsänderung in Sekunden",
                     "minimum": 0
                 },
                 "as_negate_age": {
-                    "type": "boolean",
+                    "enum": [ true ],
                     "description": "Die Grenzen von min_age und max_age werden vertauscht ausgewertet"
+                },
+                "as_value_laststate": {
+                    "type": "string",
+                    "description": "Item-Name des aktuellen Zustands (voll qualifiziert)"
+                },
+                "as_negate_laststate": {
+                    "enum": [ true ],
+                    "description": "laststate wird negiert"
                 }
             },
             "patternProperties": {

@@ -23,8 +23,10 @@ namespace json2conf {
             mRoot = iJson.Root;
             mCurrentFileName = iFileName;
             this.ResolveTemplates(iJson, iFileName);
+            this.Preprocess(iJson);
             this.Conversion(iJson);
             this.ReplaceNames();
+            this.ReplaceWidgetIds();
         }
 
         public ConvertJson2Conf(FileInfo iFile) {
@@ -37,6 +39,19 @@ namespace json2conf {
             foreach (var lPair in mNameLookup) {
                 mConf.Replace(lPair.Key, lPair.Value);
             }
+        }
+
+        private void ReplaceWidgetIds() {
+            string lOut = mConf.ToString();
+            int lCount = 0;
+            lOut = Regex.Replace(lOut, @"\.\(#\)", delegate (Match match)
+            {
+                //string v = match.ToString();
+                lCount++;
+                return ".auto" + lCount.ToString();
+            });
+            mConf.Clear();
+            mConf.AppendLine(lOut);
         }
 
         private void ResolveTemplates(JObject iJson, string iFileName) {
@@ -65,7 +80,24 @@ namespace json2conf {
                         JProperty lDelete = lTarget.Property("$delete");
                         if (lDelete != null) {
                             foreach (var lToken in lDelete.Value.Children()) {
-                                lTarget.Remove(lToken.ToString());
+                                // we parse the current token and check for array notation
+                                string[] lAddress = lToken.ToString().Split(new char[] { '[', ',', ']' }, StringSplitOptions.RemoveEmptyEntries);
+                                if (lAddress.Length == 1) {
+                                    lTarget.Remove(lToken.ToString());
+                                } else {
+                                    //evaluate array notation and delete according entry
+                                    var lArray = lTarget.Property(lAddress[0]).Value;
+                                    for (int i = 1; i < lAddress.Length; i++) {
+                                        if (lArray.Type == JTokenType.Array) {
+                                            var lEntry = (lArray as JArray)[int.Parse(lAddress[i])];
+                                            if (i == lAddress.Length - 1) {
+                                                lEntry.Remove();
+                                            } else {
+                                                lArray = lEntry;
+                                            }
+                                        }
+                                    }
+                                }
                             }
                             lTarget.Remove("$delete");
                         }
@@ -136,6 +168,21 @@ namespace json2conf {
                 lValue = iProperty.Value.ToString();
             }
             return lValue + " ";
+        }
+
+        private void Preprocess(JObject iJson) {
+            //after the introduction of autoblind with ist special handling (autoBlind is an item, but starts with a lowercase letter)
+            //we have to preprocess the model to adapt corrections
+            //This has to happen as an preprocessing step, the first try to do it "in between" failed due to complexity
+            foreach (var lProperty in iJson.Properties().ToArray()) {
+                if (lProperty.Value.Type == JTokenType.Object) {
+                    Preprocess(lProperty.Value as JObject);
+                    var lNewName = MapProperyName(lProperty.Name);
+                    if (lProperty.Name != lNewName) {
+                        lProperty.Replace(new JProperty(lNewName, lProperty.Value));
+                    }
+                }
+            }
         }
 
         private void Conversion(JObject iJson, int iLevel = 1) {
@@ -284,7 +331,7 @@ namespace json2conf {
             //manage knx GA lookup
             if (!lValue.Contains("-")) {
                 if (iProperty.Name.StartsWith("knx_") && iProperty.Name != "knx_dpt") {
-                    Util.GroupAddressLookupAdd(lValue,iProperty.Path);
+                    Util.GroupAddressLookupAdd(lValue, iProperty.Path);
                 }
 
             }
@@ -293,9 +340,9 @@ namespace json2conf {
         private void ParseItemReference(JProperty iProperty, string iValue) {
             string[] lItems = null;
             //just specific properties allow item references
-            if (iProperty.Name == "eval_trigger") {
+            if (iProperty.Name == "eval_trigger" || iProperty.Name == "as_value_laststate") {
                 lItems = iValue.Split('|');
-            } else if (iProperty.Name == "eval" || (iProperty.Name.StartsWith("as_set_") && iValue.StartsWith("eval:"))) {
+            } else if (iProperty.Name == "eval" || (iProperty.Name.StartsWith("as_") && iValue.StartsWith("eval:"))) {
                 MatchCollection matches = Regex.Matches(iValue, @"sh\.([a-zA-Z\.]*)\(\)");
                 // Here we check the Match instance.
                 if (matches.Count > 0) {
@@ -309,7 +356,7 @@ namespace json2conf {
                         if (lItem != null && lItem != "") lItems[lCount] = lItem;
                     }
                 }
-            } else if (iProperty.Name.StartsWith("as_set_") && iValue.StartsWith("item:")) {
+            } else if (iProperty.Name.StartsWith("as_") && iValue.StartsWith("item:")) {
                 lItems = new string[1];
                 lItems[0] = iValue.Substring(5);
             } else if (iProperty.Name.StartsWith("as_item_")) {
@@ -354,6 +401,7 @@ namespace json2conf {
         private string ParseRelativePath(JProperty iProperty, string iValue) {
             iValue = iValue.Replace("icon0~", "icon0°");
             iValue = iValue.Replace("icon1~", "icon1°");
+            iValue = MapPropertyPath(iValue);
             for (int lPathLength = 10; lPathLength > 0; lPathLength--) {
                 var lReplace = new string('~', lPathLength);
                 int lPos = iValue.IndexOf(lReplace);
@@ -371,7 +419,6 @@ namespace json2conf {
                     } else {
                         iValue = iValue.Replace(lReplace, lPath);
                     }
-                    iValue = MapPropertyPath(iValue);
                 }
             }
             iValue = iValue.Replace("icon1°", "icon1~");

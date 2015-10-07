@@ -3,6 +3,17 @@
     "type": "object",
     "title": "Properties vom smartvisu-Plugin",
     "definitions": {
+        "arrayOrder": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$order": {
+                    "type": "number",
+                    "description": "neue Position des vorherigen Arrray-Eintrags",
+                    "minimum": 0
+                }
+            }
+        },
         "singleWidget": {
             "type": "string",
             "description": "Ein widget"
@@ -35,8 +46,17 @@
             "description": "VISU: Seitentyp",
             "enum": [
                 "room",
-                "seperator"
+                "seperator",
+                "overview"
             ]
+        },
+        "sv_overview": {
+            "type": "string",
+            "description": "VISU: Bestimmt den Typ <typ> der Übersicht, alle items mit sv_item_type = <typ> werden hier rein generiert"
+        },
+        "sv_item_type": {
+            "type": "string",
+            "description": "VISU: Bestimmt den Typ <typ> des Items, dieses wird auf eine Overview-Seite vom Typ <typ> generiert"
         },
         "sv_img": {
             "type": "string",
@@ -45,6 +65,18 @@
         },
         "sv_nav_aside": {
             "description": "VISU: Widgets in der Sidebar",
+            "$ref": "#/definitions/Widgets"
+        },
+        "sv_heading_left": {
+            "description": "VISU: Widgets im Seitenkopf links",
+            "$ref": "#/definitions/Widgets"
+        },
+        "sv_heading_center": {
+            "description": "VISU: Widgets im Seitenkopf mitte",
+            "$ref": "#/definitions/Widgets"
+        },
+        "sv_heading_right": {
+            "description": "VISU: Widgets im Seitenkopf rechts",
             "$ref": "#/definitions/Widgets"
         },
         "sv_widget": { "$ref": "#/definitions/Widgets" },
