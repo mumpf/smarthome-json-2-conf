@@ -63,11 +63,14 @@ namespace json2conf {
             } else {
                 lKeys = new string[] { iKey};
             }
+            //in value, get rid of ".knx_*"
+            int lPos = iValue.LastIndexOf(".knx_");
+            if (lPos > 0) iValue = iValue.Substring(0, lPos);
             foreach (var lKey in lKeys) {
                 if (!gGroupAddressLookup.ContainsKey(lKey)) {
                     Util.gGroupAddressLookup.Add(lKey, new List<string>());
                 }
-                Util.gGroupAddressLookup[lKey].Add(iValue);
+                if (!Util.gGroupAddressLookup[lKey].Contains(iValue)) Util.gGroupAddressLookup[lKey].Add(iValue);
 
             }
         }
@@ -75,7 +78,7 @@ namespace json2conf {
         public static void OutputGA(string iFileName, SortedDictionary<string, List<string>> iGA) {
             //var lFileName = Path.Combine(iDirName, "Gruppenadressen.txt");
 
-            Debug.WriteLine(iFileName);
+            //Debug.WriteLine(iFileName);
             StringBuilder lOut = new StringBuilder();
             foreach (var lItem in iGA) {
                 StringBuilder lLine = new StringBuilder();
@@ -90,8 +93,8 @@ namespace json2conf {
                 }
                 lOut.AppendLine(lLine.ToString());
             }
-            Debug.WriteLine(lOut.ToString());
-            Debug.WriteLine("");
+            //Debug.WriteLine(lOut.ToString());
+            //Debug.WriteLine("");
             File.WriteAllText(iFileName, lOut.ToString());
         }
 

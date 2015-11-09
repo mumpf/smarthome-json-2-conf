@@ -12,22 +12,38 @@ namespace json2conf {
         public static string gKnxReplace = "-/-/-";
         public Merge(string iTemplateFileName, JObject iTargetObject) {
             JObject lTemplateJson = Util.ReadJsonFromFile(iTemplateFileName);
-            MergeTemplate(iTargetObject, lTemplateJson);
+            MergeTemplateStart(iTargetObject, lTemplateJson, "");
         }
 
-        private void MergeTemplate(JObject iTarget, JObject iTemplate) {
+        public Merge(string iTemplateFileName, JObject iTargetObject, string iKnxReplace) {
+            JObject lTemplateJson = Util.ReadJsonFromFile(iTemplateFileName);
+            MergeTemplateStart(iTargetObject, lTemplateJson, iKnxReplace);
+        }
+
+        private void MergeTemplateStart(JObject iTarget, JObject iTemplate, string iKnxReplace) {
             //evaluate template
             JProperty lTemplate = iTarget.Property("$template");
+            //string lOldKnxReplace = "";
             if (lTemplate != null) {
-                JProperty lKnx = (lTemplate.Value as JObject).Property("knx");
-                if (lKnx != null) gKnxReplace = lKnx.Value.ToString();
+                //JProperty lKnx = (lTemplate.Value as JObject).Property("knx");
+                //if (lKnx != null) {
+                //    lOldKnxReplace = gKnxReplace;
+                //    gKnxReplace = lKnx.Value.ToString();
+                //}
                 JObject lTemplateObject = iTemplate.Properties().Last().Value as JObject;
                 iTarget.Remove("$template");
-                MergeTemplate(iTarget, lTemplateObject, gKnxReplace);
+                MergeTemplate(iTarget, lTemplateObject, iKnxReplace);
+                //if (lKnx != null && lOldKnxReplace != "-/-/-") gKnxReplace = lOldKnxReplace;
             }
         }
 
         private void MergeTemplate(JObject iTarget, JObject iTemplate, string iKnxReplace) {
+            //solve nesting problem with templates: we write the right knx-address in all subtemplates without an own knx-address
+            //JProperty lTemplate = iTarget.Property("$template");
+            //if (lTemplate != null) {
+            //    JObject lTemplateObject = lTemplate.Value as JObject;
+            //    if (lTemplateObject.Property("knx") == null) lTemplateObject.Add("knx", iKnxReplace);
+            //}
             JProperty lOverride = iTarget.Property("$override");
             foreach (var lTemplateProperty in iTemplate.Properties()) {
                 var lTargetProperty = iTarget.Property(lTemplateProperty.Name);

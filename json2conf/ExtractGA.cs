@@ -19,7 +19,7 @@ namespace json2conf {
             foreach (var lElement in xElement.Descendants("{" + lXmlns + "}GroupAddress")) {
                 var lGa = OutputGA(lElement.Attribute("Address").Value);
                 var lName = lElement.Attribute("Name").Value;
-                Debug.WriteLine(string.Format("{0} - {1}", lGa, lName));
+                //Debug.WriteLine(string.Format("{0} - {1}", lGa, lName));
                 var lList = new List<string>();
                 lList.Add(lName);
                 GA.Add(lGa, lList);

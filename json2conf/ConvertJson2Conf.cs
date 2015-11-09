@@ -22,7 +22,7 @@ namespace json2conf {
             mItemLookup = new Dictionary<string, string>();
             mRoot = iJson.Root;
             mCurrentFileName = iFileName;
-            this.ResolveTemplates(iJson, iFileName);
+            this.ResolveTemplates(iJson, iFileName, "");
             this.Preprocess(iJson);
             this.Conversion(iJson);
             this.ReplaceNames();
@@ -44,8 +44,7 @@ namespace json2conf {
         private void ReplaceWidgetIds() {
             string lOut = mConf.ToString();
             int lCount = 0;
-            lOut = Regex.Replace(lOut, @"\.\(#\)", delegate (Match match)
-            {
+            lOut = Regex.Replace(lOut, @"\.\(#\)", delegate (Match match) {
                 //string v = match.ToString();
                 lCount++;
                 return ".auto" + lCount.ToString();
@@ -54,28 +53,39 @@ namespace json2conf {
             mConf.AppendLine(lOut);
         }
 
-        private void ResolveTemplates(JObject iJson, string iFileName) {
+        private void ResolveTemplates(JObject iJson, string iFileName, string iKnxReplace) {
             //evaluate template
             JProperty lTemplate = null;
             string lFileName = iFileName;
+            string lKnxReplace = iKnxReplace;
             while ((lTemplate = iJson.Property("$template")) != null) {
-                lFileName = (lTemplate.Value as JObject).Property("source").Value.ToString();
+                JObject lTemplateValue = lTemplate.Value as JObject;
+                lFileName = lTemplateValue.Property("source").Value.ToString();
                 lFileName = Path.Combine(Path.GetDirectoryName(iFileName), "..", "templates", lFileName + ".json");
+                JProperty lKnx = lTemplateValue.Property("knx");
+                if (lKnx != null) {
+                    lKnxReplace = lKnx.Value.ToString();
+                }
                 try {
-                    var lConvert = new Merge(lFileName, iJson);
+                    if (lKnxReplace == "") {
+                        var lConvert = new Merge(lFileName, iJson);
+                    } else {
+                        var lConvert = new Merge(lFileName, iJson, lKnxReplace);
+                    }
                 } catch (FileNotFoundException) {
                     Util.gMessages.AppendLine(string.Format("Template '{0}' nicht gefunden, Aufrufstelle '{1}'", Util.FileNameToString(lFileName), Util.FileNameToString(iFileName)));
                     iJson.Remove("$template");
                     break;
                 }
                 //iJson.Remove("$template");
+                //Debug.WriteLine( iJson.ToString());
             };
             foreach (var lProperty in iJson.Properties()) {
                 if (lProperty.Value.Type == JTokenType.Object) {
                     var lPropertyName = MapProperyName(lProperty.Name);
                     if (lPropertyName.Substring(0, 1) == lPropertyName.Substring(0, 1).ToUpper()) {
                         JObject lTarget = lProperty.Value as JObject;
-                        this.ResolveTemplates(lTarget, lFileName);
+                        this.ResolveTemplates(lTarget, lFileName, lKnxReplace);
                         //delete can be just evaluated afterwards on subobject, otherwise it would change the collection
                         JProperty lDelete = lTarget.Property("$delete");
                         if (lDelete != null) {
@@ -480,9 +490,9 @@ namespace json2conf {
 
         private void Output(string iFileName) {
             var lFileName = Path.ChangeExtension(iFileName, "conf");
-            Debug.WriteLine(lFileName);
-            Debug.WriteLine(mConf.ToString());
-            Debug.WriteLine("");
+            //Debug.WriteLine(lFileName);
+            //Debug.WriteLine(mConf.ToString());
+            //Debug.WriteLine("");
             File.WriteAllText(lFileName, mConf.ToString());
         }
     }
