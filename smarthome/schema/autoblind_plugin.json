@@ -47,8 +47,20 @@
                     "$ref": "#/definitions/condition"
                 },
                 "as_trigger_*": {
-                    "description": "Triggert eine Logik, wenn der Zustand erreicht ist im Format Logikname:Wert",
+                "description": "Triggert eine Logik, wenn der Zustand erreicht ist im Format Logikname:Wert",
+                "type": "string"
+                },
+                "as_set_*": {
+                    "description": "Setzt ein Item, wenn dieser Zustand erreicht worden ist (* muss durch Namen ersetzt werden)",
                     "type": "string"
+                },
+                "as_byattr_*": {
+                    "description": "Setzt ein Item mit dem Wert des Attributs, wenn dieser Zustand erreicht worden ist (* muss durch Namen ersetzt werden)",
+                    "type": "string"
+                },
+                "as_delay_*": {
+                    "description": "Verzögerung: Zeit (in s), die vergehen muss, bevor eine Änderung ausgeführt wird",
+                    "type": "number"
                 }
             },
             "patternProperties": {
@@ -242,8 +254,12 @@
                 "visu_acl": {
                     "enum": [ "ro" ]
                 },
-                "cache": {
-                    "enum": [ true ]
+              "cache": {
+                "enum": [ true ]
+                },
+              "name": {
+                "type": "string",
+                "description": "Aufgabe dieser State-Engine"
                 }
             }
         },
@@ -255,26 +271,34 @@
                 "suspended",
                 "lock",
                 "stateId",
-                "stateName"
+                "stateName",
+                "manuell"
             ],
-            "properties": {
-                "suspended": {
-                    "description": "Staus: Automatik ist durch manuellen Eingriff deaktiviert",
-                    "$ref": "ItemSchema.json#/definitions/item"
+          "properties": {
+            "$order": {
+                    "$ref": "ItemSchema.json#/definitions/smarthome_basic/properties/%24order"
                 },
-                "lock": {
-                    "description": "Sperren der Automatik",
-                    "$ref": "ItemSchema.json#/definitions/item"
-                },
-                "stateId": {
-                    "description": "Letzter angesteuerter Zustand (Item)",
-                    "$ref": "#/definitions/stateStore"
-                },
-                "stateName": {
-                    "description": "Letzter angesteuerter Zustand (Name)",
-                    "$ref": "#/definitions/stateStore"
-                }
+            "suspended": {
+              "description": "Staus: Automatik ist durch manuellen Eingriff deaktiviert",
+              "$ref": "ItemSchema.json#/definitions/item"
+            },
+            "lock": {
+              "description": "Sperren der Automatik",
+              "$ref": "ItemSchema.json#/definitions/item"
+            },
+            "stateId": {
+              "description": "Letzter angesteuerter Zustand (Item)",
+              "$ref": "#/definitions/stateStore"
+            },
+            "stateName": {
+              "description": "Letzter angesteuerter Zustand (Name)",
+              "$ref": "#/definitions/stateStore"
+            },
+            "manuell": {
+              "description": "Item fuer manuelle Bedienung. Auswertung mit eval_trigger",
+              "$ref": "ItemSchema.json#/definitions/item"
             }
+          }
         },
         "rules": {
             "type": "object",
@@ -363,10 +387,15 @@
                             "type": "integer",
                             "minimum": 1
                         },
-                        "as_startup_delay": {
-                            "description": "Zeit bis zur ersten Auswertung in Sekunden",
-                            "type": "integer",
-                            "minimum": 1
+                      "as_startup_delay": {
+                        "description": "Zeit bis zur ersten Auswertung in Sekunden",
+                        "type": "integer",
+                        "minimum": 1
+                        },
+                      "as_repeat_actions": {
+                            "description": "Hiermit wird die wiederholte Ausführung von Aktionen unterdrückt, es werden nur aktionen ausgeführt, wenn sich der Wert geändert hat",
+                            "enum": [ false ],
+                            "default": true
                         }
                     }
                 }
