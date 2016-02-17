@@ -448,7 +448,7 @@ namespace json2conf {
                             var lToken = this.mRoot.SelectToken(lPath, true);
 
                         } catch (Exception) {
-                            Util.gReferencedItems.Add(new ItemRefrence(lMatch.ToString(), mCurrentFileName, iProcessedProperty.Path));
+                            Util.gReferencedItems.Add(new ItemRefrence(lPath.ToString(), mCurrentFileName, iProcessedProperty.Path));
                             //Debug.Fail(string.Format("\rItem {1} not found, \rrelative path is {0}, \rprocessed Item is {2}", lMatch, lPath, iProperty.Path));
                         }
                     }
